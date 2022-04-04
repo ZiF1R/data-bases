@@ -1,4 +1,3 @@
-GO
 use UNIVER;
 
 -- #1
@@ -141,14 +140,14 @@ WHILE (@i < 20000)
 
 SELECT * FROM #EXAMPLE_5 where ID between 150 and 200 order by ID; 
 
-SELECT name [Индекс], avg_fragmentation_in_percent [Фрагментация(%)]
-	FROM sys.dm_db_index_physical_stats(DB_ID(N'TEMPDB'), 
-	OBJECT_ID(N'#EXAMPLE'),NULL,NULL,NULL) ss
-	JOIN sys.indexes ii on ss.index_id = ii.index_id and ss.object_id = ii.object_id
-											WHERE name is not null;
+SELECT a.index_id, name, avg_fragmentation_in_percent
+FROM sys.dm_db_index_physical_stats (DB_ID(N'#EXAMPLE_5'),
+NULL, NULL, NULL, NULL) AS a
+JOIN sys.indexes AS b
+ON a.object_id = b.object_id AND a.index_id = b.index_id;
 
-ALTER index #EXAMPLE_UNCL on #EXAMPLE reorganize;
-ALTER index #EXAMPLE_UNCL on #EXAMPLE rebuild with (online = off);
+ALTER index #EXAMPLE_UNCL on #EXAMPLE_5 reorganize;
+ALTER index #EXAMPLE_UNCL on #EXAMPLE_5 rebuild with (online = off);
 
 
 -- #6
@@ -171,8 +170,9 @@ CREATE index #EX_TKEY on #EXAMPLE_6(RAND_NUM) with (fillfactor = 65);
 
 INSERT top(50) percent INTO #EXAMPLE_6(TFIELD, RAND_NUM)
 	SELECT TFIELD, RAND_NUM  FROM #EXAMPLE_6;
-SELECT name [Индекс], avg_fragmentation_in_percent [Фрагментация (%)]
-       FROM sys.dm_db_index_physical_stats(DB_ID(N'TEMPDB'),    
-       OBJECT_ID(N'#EX'), NULL, NULL, NULL) ss  JOIN sys.indexes ii 
-        ON ss.object_id = ii.object_id and ss.index_id = ii.index_id  
-        WHERE name is not null;
+
+SELECT a.index_id, name, avg_fragmentation_in_percent
+FROM sys.dm_db_index_physical_stats (DB_ID(N'#EXAMPLE_6'),
+NULL, NULL, NULL, NULL) AS a
+JOIN sys.indexes AS b
+ON a.object_id = b.object_id AND a.index_id = b.index_id;

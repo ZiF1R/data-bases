@@ -29,8 +29,9 @@ FROM Groups;
 
 --- #
 
-SELECT name [Индекс], avg_fragmentation_in_percent [Фрагментация(%)]
-	FROM sys.dm_db_index_physical_stats(DB_ID(N'Dobriyan_MyBase'),
-	OBJECT_ID(N'Groups'),NULL,NULL,NULL) ss
-	JOIN sys.indexes ii on ss.index_id = ii.index_id and ss.object_id = ii.object_id
-	WHERE name is not null;
+
+SELECT a.index_id, name, avg_fragmentation_in_percent
+FROM sys.dm_db_index_physical_stats (DB_ID(N'Groups'),
+NULL, NULL, NULL, NULL) AS a
+JOIN sys.indexes AS b
+ON a.object_id = b.object_id AND a.index_id = b.index_id;
